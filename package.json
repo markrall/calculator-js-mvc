@@ -1,0 +1,19 @@
+{
+  "name": "js-calculator",
+  "version": "1.0.0",
+  "description": "JS calculator built with Parcel, TypeScript, SCSS and vanilla JS ES6 using MVC pattern.",
+  "main": "src/js/index.tx",
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.27.0",
+    "typescript": "^4.0.3"
+  }
+}
