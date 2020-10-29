@@ -62,6 +62,7 @@ class CalculatorView {
         this.input = '0';
         this.operator = null;
         this.updateDisplay(this.input);
+        handler(0, keyValue);
       }
       if (keyValue === 'plusminus') {
         this.operand = parseFloat(this.display.innerText) * -1;
@@ -78,6 +79,7 @@ class CalculatorView {
       // Ignore click events on non-key elements
       if (!element.classList.contains('calc__key')) return;
 
+      // Based on input decide the next step in the calulation
       this.clickEventHandler(element, handler);
     });
   }
