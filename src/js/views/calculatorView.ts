@@ -12,10 +12,11 @@ class CalculatorView {
   resetInput: boolean;
   
   constructor() {
-    this.#parentElement = document.getElementById('root');
-    this.operator = null;
+    this.#parentElement = <HTMLElement>document.getElementById('root');
+    this.operator = '';
     this.input = '0';
     this.operand = 0;
+    this.display = null!;
     this.resetInput = false;
   }
 
@@ -31,21 +32,25 @@ class CalculatorView {
       functionKey: 'key-type-function',   // calc percentage, square etc against current result
     };
 
-    const keyValue = element.dataset.key;
+    const keyValue = element.dataset.key || '';
 
     // Capture operand inputs and update diaplay
     if (element.classList.contains(keyType.operandKey)) {
-      if (this.resetInput) this.input = '';
-      this.resetInput = false;
+      if (this.resetInput) {
+        this.input = '';
+        this.resetInput = false;
+      }
 
       if (keyValue === '.') {
         if (this.input.includes(keyValue)) return;
         if (this.input === '') { this.input = '0.'; } else { this.input += keyValue; }
       } else if (this.input === '0') { 
-        this.input = keyValue 
+        this.input = keyValue; 
       } else {
         this.input += keyValue;
       }
+      if (isDevelopment) console.log('CalculatorView.:clickEventHandler:thisInput: ', this.input);
+      
       this.updateDisplay(this.input);
     }
 
@@ -60,7 +65,8 @@ class CalculatorView {
       if (keyValue === 'clear') {
         this.operand = 0;
         this.input = '0';
-        this.operator = null;
+        this.operator = '';
+        this.resetInput = false;
         this.updateDisplay(this.input);
         handler(0, keyValue);
       }
@@ -84,13 +90,13 @@ class CalculatorView {
     });
   }
   
-  addHandlerRender(handler) {
+  addHandlerRender(handler: { (): void; (this: Window, ev: Event): any; }) {
     window.addEventListener('load', handler);
   }
 
   render() {
     this.#parentElement.innerHTML = this.generateMarkup();
-    this.display = document.querySelector('.calc__display');
+    this.display = <HTMLElement>document.querySelector('.calc__display');
     this.updateDisplay(this.input);
   }
 

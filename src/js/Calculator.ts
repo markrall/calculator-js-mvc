@@ -1,7 +1,6 @@
 //@ts-check
-/** @typedef { import('./types.d').CalculatorState } CalculatorState */
 
-import * as types from "./types";
+import { CalculatorState } from "../../@types/types";
 
 /**
  * @class Model
@@ -9,12 +8,12 @@ import * as types from "./types";
  * Manages application data
 */
 class Calculator {
-  state: types.CalculatorState;
+  state: CalculatorState;
 
   constructor() {
     this.state = {
-      operator: null,
-      operand: 0,
+      operator: '',
+      operand: null,
       result: 0,
     };
   }
@@ -23,87 +22,68 @@ class Calculator {
     return this.state.result;
   }
 
-  getOperator() {
-    return this.state.operator;
-  }
-
-  getOperand() {
-    return this.state.operand;
-  }
-
   calculate(operand: number, operator: string) {
-    const operations = {
-      add: this.add,
-      subtract: this.subtract,
-      multiply: this.multiply,
-      divide: this.divide,
-      equals: this.equals,
-      clear: this.clear,
-    };
-    
-    
-    if (this.state.operator === null) this.state.operator = operator;
-    
     if (operator === 'clear') {
-      operations[operator]();
+      this.clear();
     } else if (operator === 'equals') {
-      operations[this.state.operator]();
+      this.equals();
     } else {
-      this.state.operand = operand;
-      if (this.state.result === 0) this.state.result = this.state.operand;
+      if (this.state.operand === null) {
+        this.state.operand = operand;
+        this.state.result = operand;
+        this.state.operator = operator;
+        return;
+      }
+
+      if (this.state.operator === 'add') this.add(operand);
+      if (this.state.operator === 'subtract') this.subtract(operand);
+      if (this.state.operator === 'multiply') this.multiply(operand);
+      if (this.state.operator === 'divide') this.divide(operand);
       
-      operations[this.state.operator]();
-      
+      if (isDevelopment) console.log({
+        thisResult: this.state.result,
+        thisOperand: this.state.operand,
+        thisOperator: this.state.operator,
+        operand,
+        operator,
+      });
+
+      this.state.operand = operand; 
       this.state.operator = operator;
     }
     
-
-    // return result
     return this.state.result;
   }
 
   // Add two operands
-  add = () => {
-    console.group('add');
-    console.log('current result: ', this.state.result);
-    console.log('operand: ', this.state.operand);
-    console.log('new result: ', this.state.result + this.state.operand);
-    console.groupEnd();
-    
-    this.state.result += this.state.operand;
+  add = (operand: number) => {
+    this.state.result = this.state.result + operand;
   };
 
   // Subtract two operands
-  subtract = () => {
-    this.state.result -= this.state.operand;
+  subtract = (operand: number) => {
+    this.state.result = this.state.result - operand;
   };
 
   // Multiply two operands
-  multiply = () => {
-    console.group('multiply');
-    console.log(this.state.result);
-    console.log(this.state.operand);
-    console.log(this.state.result * this.state.operand);
-    console.groupEnd();
-    
-    this.state.result *= this.state.operand;
+  multiply = (operand: number) => {
+    this.state.result = this.state.result * operand;
   };
 
   // Divide two operands
-  divide = () => {
-    this.state.result /= this.state.operand;
+  divide = (operand: number) => {
+    this.state.result = this.state.result / operand;
   };
 
   equals= () => {
     
-    console.log(this.state.result);
   };
 
   // Clear all input and history
   clear = () => {
     this.state = {
-      operator: null,
-      operand: 0,
+      operator: '',
+      operand: null,
       result: 0,
     };
   };
