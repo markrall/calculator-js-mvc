@@ -13,7 +13,7 @@ const calculatorController = function () {
  * @param {string} operator
  * @returns {void}
  */
-const clickController = function (operand: number, operator: string) {
+const clickController = function (operand: number, operator: string): void {
   model.calculate(operand, operator);
   
   if (isDevelopment) console.log('Controller:clickController:model.getResult: ', model.getResult());
@@ -21,7 +21,7 @@ const clickController = function (operand: number, operator: string) {
   view.updateDisplay(model.getResult().toString());
 };
 
-const init = function () {
+const init = function ():void {
   view.addHandlerRender(calculatorController);
   view.addHandlerClick(clickController);
 };
