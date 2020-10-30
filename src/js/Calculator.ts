@@ -18,21 +18,27 @@ class Calculator {
     };
   }
 
-  getResult() {
+  getResult(): number {
     return this.state.result;
   }
 
-  calculate(operand: number, operator: string) {
+  calculate(operand: number, operator: string): number {
     if (operator === 'clear') {
       this.clear();
     } else if (operator === 'equals') {
-      this.equals();
+      if (isDevelopment) console.log(this.state.operand, this.state.operator, operand);
+
+      if (this.state.operator === 'add') this.add(operand);
+      if (this.state.operator === 'subtract') this.subtract(operand);
+      if (this.state.operator === 'multiply') this.multiply(operand);
+      if (this.state.operator === 'divide') this.divide(operand);
+      return this.state.result;
     } else {
       if (this.state.operand === null) {
         this.state.operand = operand;
         this.state.result = operand;
         this.state.operator = operator;
-        return;
+        return this.state.result;
       }
 
       if (this.state.operator === 'add') this.add(operand);
@@ -40,7 +46,7 @@ class Calculator {
       if (this.state.operator === 'multiply') this.multiply(operand);
       if (this.state.operator === 'divide') this.divide(operand);
       
-      if (isDevelopment) console.log({
+      if (isDevelopment) console.log('Calcultor:calculate: ', {
         thisResult: this.state.result,
         thisOperand: this.state.operand,
         thisOperator: this.state.operator,
@@ -56,31 +62,27 @@ class Calculator {
   }
 
   // Add two operands
-  add = (operand: number) => {
+  add = (operand: number): void => {
     this.state.result = this.state.result + operand;
   };
 
   // Subtract two operands
-  subtract = (operand: number) => {
+  subtract = (operand: number): void => {
     this.state.result = this.state.result - operand;
   };
 
   // Multiply two operands
-  multiply = (operand: number) => {
+  multiply = (operand: number): void => {
     this.state.result = this.state.result * operand;
   };
 
   // Divide two operands
-  divide = (operand: number) => {
+  divide = (operand: number): void => {
     this.state.result = this.state.result / operand;
   };
 
-  equals= () => {
-    
-  };
-
   // Clear all input and history
-  clear = () => {
+  clear = (): void => {
     this.state = {
       operator: '',
       operand: null,

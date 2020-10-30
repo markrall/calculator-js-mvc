@@ -1,7 +1,6 @@
 //@ts-check
 
-// TODO add event listners for keys eg. [0-9+-*/=], esc, return
-// TODO style plusminus
+// TODO: add key event listners eg. [0-9+-*/=], esc, return
 
 class CalculatorView {
   #parentElement: HTMLElement;
@@ -10,6 +9,7 @@ class CalculatorView {
   operator: string;
   display: HTMLElement;
   resetInput: boolean;
+  defaultDisplayFontSize: number;
   
   constructor() {
     this.#parentElement = <HTMLElement>document.getElementById('root');
@@ -18,13 +18,18 @@ class CalculatorView {
     this.operand = 0;
     this.display = null!;
     this.resetInput = false;
+    this.defaultDisplayFontSize = 0;
   }
 
-  updateDisplay(output: string) {
+  updateDisplay(output: string): void {
+    if (output.length > 9) this.display.style.fontSize = this.defaultDisplayFontSize / 2 + "px";
+    if (output.length > 19) this.display.style.fontSize = this.defaultDisplayFontSize / 3 + "px";
+    if (output.length > 28) this.display.style.fontSize = this.defaultDisplayFontSize / 6 + "px";
+    if (output.length <= 9) this.display.style.fontSize = this.defaultDisplayFontSize + "px";
     this.display.innerText = output;
   }
   
-  clickEventHandler(element: HTMLElement, handler: Function) {
+  clickEventHandler(element: HTMLElement, handler: Function): void {
     // define major key types to determine logical steps
     const keyType = {
       operandKey: 'key-type-operand',     // capture operand inputs eg. [0-9.±]
@@ -74,10 +79,14 @@ class CalculatorView {
         this.operand = parseFloat(this.display.innerText) * -1;
         this.updateDisplay(this.operand.toString());
       }
+      if (keyValue === 'percentage') {
+        this.operand = parseFloat(this.display.innerText) / 100;
+        this.updateDisplay(this.operand.toString());
+      }
     }
   }
 
-  addHandlerClick(handler: Function) {
+  addHandlerClick(handler: Function): void {
     
     this.#parentElement.addEventListener('click', e => {
       const element = <HTMLElement>e.target;
@@ -88,15 +97,23 @@ class CalculatorView {
       // Based on input decide the next step in the calulation
       this.clickEventHandler(element, handler);
     });
+
+    // how to track modifier key events https://www.gavsblog.com/blog/detect-single-and-multiple-keypress-events-javascript
+    document.addEventListener('keydown', e => {
+      if (e.key.match(/[0-9-+/*=%\.]|Enter|Escape/gi)) console.log('SPECIAL e.code: ', e.key)
+      
+      
+    });
   }
   
-  addHandlerRender(handler: { (): void; (this: Window, ev: Event): any; }) {
+  addHandlerRender(handler: { (): void; (this: Window, ev: Event): any; }): void {
     window.addEventListener('load', handler);
   }
 
-  render() {
+  render(): void {
     this.#parentElement.innerHTML = this.generateMarkup();
     this.display = <HTMLElement>document.querySelector('.calc__display');
+    this.defaultDisplayFontSize = parseFloat(window.getComputedStyle(this.display, null).getPropertyValue('font-size'));
     this.updateDisplay(this.input);
   }
 
