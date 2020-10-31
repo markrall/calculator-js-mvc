@@ -1,1 +1,0 @@
-declare const isDevelopment: boolean
