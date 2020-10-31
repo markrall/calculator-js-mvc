@@ -26,8 +26,6 @@ class Calculator {
     if (operator === 'clear') {
       this.clear();
     } else if (operator === 'equals') {
-      if (isDevelopment) console.log(this.state.operand, this.state.operator, operand);
-
       if (this.state.operator === 'add') this.add(operand);
       if (this.state.operator === 'subtract') this.subtract(operand);
       if (this.state.operator === 'multiply') this.multiply(operand);
@@ -46,13 +44,7 @@ class Calculator {
       if (this.state.operator === 'multiply') this.multiply(operand);
       if (this.state.operator === 'divide') this.divide(operand);
       
-      if (isDevelopment) console.log('Calcultor:calculate: ', {
-        thisResult: this.state.result,
-        thisOperand: this.state.operand,
-        thisOperator: this.state.operator,
-        operand,
-        operator,
-      });
+      
 
       this.state.operand = operand; 
       this.state.operator = operator;
