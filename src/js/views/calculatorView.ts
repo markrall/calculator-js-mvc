@@ -54,7 +54,6 @@ class CalculatorView {
       } else {
         this.input += keyValue;
       }
-      if (isDevelopment) console.log('CalculatorView.:clickEventHandler:thisInput: ', this.input);
       
       this.updateDisplay(this.input);
     }
@@ -99,10 +98,21 @@ class CalculatorView {
     });
 
     // how to track modifier key events https://www.gavsblog.com/blog/detect-single-and-multiple-keypress-events-javascript
-    document.addEventListener('keydown', e => {
-      if (e.key.match(/[0-9-+/*=%\.]|Enter|Escape/gi)) console.log('SPECIAL e.code: ', e.key)
+    let keysPressed: {[index: string]:any} = {};
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.altKey) console.log('WIN!!!');
       
+      // if (!e.key.match(/[0-9-+/*=%\.]|Enter|Escape|Alt/gi)) return;
+      keysPressed[e.key] = true;
       
+      if (keysPressed['Alt'] && e.key === '-') {
+          console.log(e.key);
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      delete keysPressed[e.key];
     });
   }
   
