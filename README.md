@@ -11,4 +11,5 @@ An MVC JS calculator built on ES6, SASS, Parcel and TypeScript that emulates the
 🗺️ Roadmap:
 
 [ ] Refactor calculatorView to make event handling modular
+
 [ ] Add keyboeard support
