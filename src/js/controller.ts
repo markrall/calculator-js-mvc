@@ -14,12 +14,14 @@ const calculatorController = function () {
  * @returns {void}
  */
 const clickController = function (operand: number, operator: string): void {
-  model.calculate(operand, operator);
+  const out = model.calculate(operand, operator);
+  console.log(out);
+  
   view.updateDisplay(model.getResult().toString());
 };
 
 const init = function ():void {
   view.addHandlerRender(calculatorController);
-  view.addHandlerClick(clickController);
+  view.addHandlerEvents(clickController);
 };
 init();

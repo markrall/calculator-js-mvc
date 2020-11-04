@@ -26,10 +26,7 @@ class Calculator {
     if (operator === 'clear') {
       this.clear();
     } else if (operator === 'equals') {
-      if (this.state.operator === 'add') this.add(operand);
-      if (this.state.operator === 'subtract') this.subtract(operand);
-      if (this.state.operator === 'multiply') this.multiply(operand);
-      if (this.state.operator === 'divide') this.divide(operand);
+      this.[this.state.operator](operand);
       return this.state.result;
     } else {
       if (this.state.operand === null) {
@@ -39,12 +36,7 @@ class Calculator {
         return this.state.result;
       }
 
-      if (this.state.operator === 'add') this.add(operand);
-      if (this.state.operator === 'subtract') this.subtract(operand);
-      if (this.state.operator === 'multiply') this.multiply(operand);
-      if (this.state.operator === 'divide') this.divide(operand);
-      
-      
+      this.[this.state.operator](operand);
 
       this.state.operand = operand; 
       this.state.operator = operator;

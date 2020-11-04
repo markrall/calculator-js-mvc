@@ -1,9 +1,10 @@
 //@ts-check
 
-// TODO: add key event listners eg. [0-9+-*/=], esc, return
+// TODO: Refector code to consolidate handling of mouse and keyboard events
+// FIXME: resolve Property 'key' does not exist on type 'Event'.ts(2339)
 
 class CalculatorView {
-  #parentElement: HTMLElement;
+  parentElement: HTMLElement;
   input: string;
   operand: number;
   operator: string;
@@ -12,7 +13,7 @@ class CalculatorView {
   defaultDisplayFontSize: number;
   
   constructor() {
-    this.#parentElement = <HTMLElement>document.getElementById('root');
+    this.parentElement = <HTMLElement>document.getElementById('root');
     this.operator = '';
     this.input = '0';
     this.operand = 0;
@@ -30,6 +31,9 @@ class CalculatorView {
   }
   
   clickEventHandler(element: HTMLElement, handler: Function): void {
+    // Ignore click events on non-key elements
+      if (!element.classList.contains('calc__key')) return;
+
     // define major key types to determine logical steps
     const keyType = {
       operandKey: 'key-type-operand',     // capture operand inputs eg. [0-9.±]
@@ -85,34 +89,38 @@ class CalculatorView {
     }
   }
 
-  addHandlerClick(handler: Function): void {
-    
-    this.#parentElement.addEventListener('click', e => {
-      const element = <HTMLElement>e.target;
-
-      // Ignore click events on non-key elements
-      if (!element.classList.contains('calc__key')) return;
-
-      // Based on input decide the next step in the calulation
-      this.clickEventHandler(element, handler);
-    });
-
-    // how to track modifier key events https://www.gavsblog.com/blog/detect-single-and-multiple-keypress-events-javascript
-    let keysPressed: {[index: string]:any} = {};
-    
-    document.addEventListener('keydown', (e) => {
-      if (e.altKey) console.log('WIN!!!');
+  keyEventHandler(event: Event, handler: Function): void {
+    if (!event.key.match(/[0-9-+/*=%\.]|Enter|Escape|Alt/gi)) return;
       
-      // if (!e.key.match(/[0-9-+/*=%\.]|Enter|Escape|Alt/gi)) return;
-      keysPressed[e.key] = true;
-      
-      if (keysPressed['Alt'] && e.key === '-') {
-          console.log(e.key);
+    let keysPressed: { [index: string]: boolean } = {};
+    
+    if (event.type === 'keydown') {
+      keysPressed[event.key] = true;
+        
+      if (keysPressed['Alt'] && event.key === '-') {
+          console.log(event.key);
       }
+    }
+
+    if (event.type === 'keyup') delete keysPressed[event.key];
+  }
+
+  addHandlerEvents(handler: Function): void {
+    
+    // Handle mouse click events
+    this.parentElement.addEventListener('click', e => {
+      // Based on input decide the next step in the calulation
+      this.clickEventHandler(<HTMLElement>e.target, handler);
     });
 
-    document.addEventListener('keyup', (e) => {
-      delete keysPressed[e.key];
+    // Handle keyboard keydown events
+    document.addEventListener('keydown', (event) => {
+      this.keyEventHandler(event, handler);
+    });
+
+    // Handle keyboard keyup events
+    document.addEventListener('keyup', (event) => {
+      this.keyEventHandler(event, handler);
     });
   }
   
@@ -121,7 +129,7 @@ class CalculatorView {
   }
 
   render(): void {
-    this.#parentElement.innerHTML = this.generateMarkup();
+    this.parentElement.innerHTML = this.generateMarkup();
     this.display = <HTMLElement>document.querySelector('.calc__display');
     this.defaultDisplayFontSize = parseFloat(window.getComputedStyle(this.display, null).getPropertyValue('font-size'));
     this.updateDisplay(this.input);
