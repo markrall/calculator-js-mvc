@@ -1,5 +1,7 @@
 # Calculator JS MVC
 
+![Screenshot]('./src/assets/screenshot.png?raw=true')
+
 An MVC JS calculator built on ES6, SASS, Parcel and TypeScript that emulates the Mac OS X system calculator in style and (some) function.
 
 ## 💁 Project Purpose
