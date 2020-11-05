@@ -23,6 +23,8 @@ class Calculator {
   }
 
   calculate(operand: number, operator: string): number {
+    console.log(operator);
+    
     if (operator === 'clear') {
       this.clear();
     } else if (operator === 'equals') {

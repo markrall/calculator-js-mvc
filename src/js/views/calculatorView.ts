@@ -29,6 +29,60 @@ class CalculatorView {
     if (output.length <= 9) this.display.style.fontSize = this.defaultDisplayFontSize + "px";
     this.display.innerText = output;
   }
+
+  operandInputHandler(char: string): void {
+    if (this.resetInput) {
+      this.input = '';
+      this.resetInput = false;
+    }
+
+    if (char === '.') {
+      if (this.input.includes(char)) return;
+      if (this.input === '') { this.input = '0.'; } else { this.input += char; }
+    } else if (this.input === '0') { 
+      this.input = char; 
+    } else {
+      this.input += char;
+    } 
+  }
+
+  operatorInputHandler(operator: string, handler: Function): void {
+    const operators: { [index: string]: string } = {
+      'add': '+',
+      'subtract': '-',
+      'multiply': '*',
+      'divide': '/',
+      'equals': '='
+    };
+    let op: string = operator;
+    
+    for (let key in operators) {
+      if (operator === operators[key]) op = key;
+    }
+
+    this.operand = parseFloat(this.display.innerText);
+    handler(this.operand, op);
+    this.resetInput = true;
+  }
+
+  functionInputHandler(fn: string, handler: Function) {
+    if (fn === 'clear' || fn === 'Escape') {
+        this.operand = 0;
+        this.input = '0';
+        this.operator = '';
+        this.resetInput = false;
+        this.updateDisplay(this.input);
+        handler(0, fn);
+      }
+      if (fn === 'plusminus') {
+        this.operand = parseFloat(this.display.innerText) * -1;
+        this.updateDisplay(this.operand.toString());
+      }
+      if (fn === 'percentage' || fn === '%') {
+        this.operand = parseFloat(this.display.innerText) / 100;
+        this.updateDisplay(this.operand.toString());
+      }
+  }
   
   clickEventHandler(element: HTMLElement, handler: Function): void {
     // Ignore click events on non-key elements
@@ -43,70 +97,38 @@ class CalculatorView {
 
     const keyValue = element.dataset.key || '';
 
-    // Capture operand inputs and update diaplay
     if (element.classList.contains(keyType.operandKey)) {
-      if (this.resetInput) {
-        this.input = '';
-        this.resetInput = false;
-      }
-
-      if (keyValue === '.') {
-        if (this.input.includes(keyValue)) return;
-        if (this.input === '') { this.input = '0.'; } else { this.input += keyValue; }
-      } else if (this.input === '0') { 
-        this.input = keyValue; 
-      } else {
-        this.input += keyValue;
-      }
-      
+      this.operandInputHandler(keyValue);
       this.updateDisplay(this.input);
     }
 
-    if (element.classList.contains(keyType.operatorKey)) {
-      this.operand = parseFloat(this.display.innerText);
-      handler(this.operand, keyValue);
-      this.resetInput = true;
-    }
+    if (element.classList.contains(keyType.operatorKey))
+      this.operatorInputHandler(keyValue, handler);
     
-    if (element.classList.contains(keyType.functionKey)) {
-      
-      if (keyValue === 'clear') {
-        this.operand = 0;
-        this.input = '0';
-        this.operator = '';
-        this.resetInput = false;
-        this.updateDisplay(this.input);
-        handler(0, keyValue);
-      }
-      if (keyValue === 'plusminus') {
-        this.operand = parseFloat(this.display.innerText) * -1;
-        this.updateDisplay(this.operand.toString());
-      }
-      if (keyValue === 'percentage') {
-        this.operand = parseFloat(this.display.innerText) / 100;
-        this.updateDisplay(this.operand.toString());
-      }
-    }
+    if (element.classList.contains(keyType.functionKey))
+      this.functionInputHandler(keyValue, handler);
   }
 
   keyEventHandler(event: Event, handler: Function): void {
-    if (!event.key.match(/[0-9-+/*=%\.]|Enter|Escape|Alt/gi)) return;
-      
-    let keysPressed: { [index: string]: boolean } = {};
+    if (!event.key.match(/[0-9-+/*=%\.]|Enter|Escape/gi)) return;
     
-    if (event.type === 'keydown') {
-      keysPressed[event.key] = true;
-        
-      if (keysPressed['Alt'] && event.key === '-') {
-          console.log(event.key);
-      }
+    if (event.key.match(/[0-9\.]/)) {
+      // process key strokes to capture operands 
+      this.operandInputHandler(event.key);
+      this.updateDisplay(this.input);
     }
-
-    if (event.type === 'keyup') delete keysPressed[event.key];
+    
+    if (event.key.match(/[-+/*=]/))
+      this.operatorInputHandler(event.key, handler);
+    
+    if (event.key.match(/[%]|Enter|Escape/))
+      this.functionInputHandler(event.key, handler);
+    
+    if (event.ctrlKey && event.key === '-')
+      this.functionInputHandler('plusminus', handler);;
   }
 
   addHandlerEvents(handler: Function): void {
-    
     // Handle mouse click events
     this.parentElement.addEventListener('click', e => {
       // Based on input decide the next step in the calulation
@@ -115,11 +137,6 @@ class CalculatorView {
 
     // Handle keyboard keydown events
     document.addEventListener('keydown', (event) => {
-      this.keyEventHandler(event, handler);
-    });
-
-    // Handle keyboard keyup events
-    document.addEventListener('keyup', (event) => {
       this.keyEventHandler(event, handler);
     });
   }
