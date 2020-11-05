@@ -14,9 +14,7 @@ const calculatorController = function () {
  * @returns {void}
  */
 const clickController = function (operand: number, operator: string): void {
-  const out = model.calculate(operand, operator);
-  console.log(out);
-  
+  model.calculate(operand, operator);
   view.updateDisplay(model.getResult().toString());
 };
 

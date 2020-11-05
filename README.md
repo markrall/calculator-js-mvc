@@ -17,9 +17,11 @@ An MVC JS calculator built on ES6, SASS, Parcel and TypeScript that emulates the
 
 ## 🗺️ Roadmap
 
-[ ] Refactor calculatorView to consolidate event handling
+[ ] Fix functionality when '=' is pressed
 
 [ ] Write full set of unit tests for model and view
+
+[x] Refactor calculatorView to consolidate event handling
 
 [x] Add keyboard support
 
